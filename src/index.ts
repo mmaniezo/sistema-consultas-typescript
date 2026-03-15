@@ -97,6 +97,27 @@ function cancelarConsulta(consulta: Consulta): Consulta | null {
   };
 }
 
+function listarConsultasPorStatus(
+  consultas: Consulta[],
+  status: StatusConsulta
+): Consulta[] {
+  return consultas.filter((consulta) => consulta.status === status);
+}
+
+function listarConsultasFuturas(consultas: Consulta[]): Consulta[] {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0); // Zera horas para comparar apenas a data
+  return consultas.filter((consulta) => consulta.data >= hoje);
+}
+
+const consultas: Consulta[] = [];
+
+function calcularFaturamento(consultas: Consulta[]): number {
+  return consultas
+    .filter((consulta) => consulta.status === "realizada")
+    .reduce((total, consulta) => total + consulta.valor, 0);
+}
+
 function exibirConsulta(consulta: Consulta): string {
   const valorFormatado = consulta.valor.toLocaleString("pt-BR", {
     style: "currency",
@@ -145,3 +166,18 @@ const consultaConfirmada3 = confirmarConsulta(consulta3);
 console.log("=== CONSULTA CONFIRMADA ===");
 console.log(exibirConsulta(consultaConfirmada));
 console.log(exibirConsulta(consultaConfirmada2));
+console.log(exibirConsulta(consultaConfirmada3));
+
+consultas.push(consultaConfirmada, consultaConfirmada2, cancelarConsulta(consulta3)!);
+
+consultas[0].status = "realizada";
+
+
+console.log("\n=== LISTA DE CANCELADAS ===");
+console.log(listarConsultasPorStatus(consultas, "cancelada"));
+
+console.log("\n=== LISTA DE FUTURAS (A partir de hoje) ===");
+console.log(listarConsultasFuturas(consultas));
+
+console.log("\n=== FATURAMENTO TOTAL ===");
+console.log(calcularFaturamento(consultas));
